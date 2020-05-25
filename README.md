@@ -83,3 +83,4 @@ Licensed under the GPLv3: http://www.gnu.org/licenses/gpl-3.0.html
 
 * Copyright 2015-2016 Open Whisper Systems
 * Copyright 2017-2018 Forsta Inc
+vscode://vscode.github-authentication/did-authenticate?windowId=6&code=ab611981dd11806778e7&state=34e093fc-e568-4a93-a552-113e49a07192
