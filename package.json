@@ -2,7 +2,7 @@
   "name": "libsignal",
   "version": "2.0.1",
   "description": "Open Whisper Systems' libsignal for Node.js",
-  "repository": "ForstaLabs/libsignal-node",
+  "repository": "",
   "keywords": [
     "signal",
     "whispersystems",
@@ -10,11 +10,49 @@
   ],
   "license": "GPL-3.0",
   "dependencies": {
-    "protobufjs": "6.8.8"
+    "assert": "^2.0.0",
+    "buffer": "^5.6.0",
+    "node-crypto": "^1.0.0",
+    "path": "^0.12.7",
+    "protobufjs": "^6.9.0"
+  },
+  "scripts": {
+    "hot-server": "cross-env NODE_ENV=development node --trace-warnings ./node_modules/webpack-dev-server/bin/webpack-dev-server --config webpack.dev.js",
+    "build": "cross-env NODE_ENV=production node --trace-warnings ./node_modules/webpack/bin/webpack --config webpack.prod.js --progress --profile --colors",
+    "dev": "cross-env START_HOT=1 npm run hot-server",
+    "cleanup": ""
   },
   "devDependencies": {
-    "eslint": "6.0.1",
-    "grunt": "1.0.4",
-    "grunt-cli": "1.2.0"
+    "@babel/core": "^7.9.6",
+    "@babel/plugin-proposal-class-properties": "^7.8.3",
+    "@babel/plugin-transform-runtime": "^7.9.6",
+    "@babel/preset-env": "^7.9.6",
+    "@babel/register": "^7.9.0",
+    "babel-cli": "^6.26.0",
+    "babel-loader": "^8.1.0",
+    "babel-plugin-transform-class-properties": "^6.24.1",
+    "babel-plugin-transform-object-rest-spread": "^6.26.0",
+    "browser-sync": "^2.26.7",
+    "clean-webpack-plugin": "^3.0.0",
+    "cross-env": "^7.0.2",
+    "css-loader": "^3.5.3",
+    "del": "^5.1.0",
+    "eslint": "7.1.0",
+    "file-loader": "^6.0.0",
+    "grunt": "1.1.0",
+    "grunt-cli": "1.3.2",
+    "html-loader": "^1.1.0",
+    "html-webpack-harddisk-plugin": "^1.0.1",
+    "html-webpack-plugin": "^4.3.0",
+    "json-loader": "^0.5.7",
+    "less": "^3.11.1",
+    "less-loader": "^6.1.0",
+    "style-loader": "^1.2.1",
+    "url-loader": "^4.1.0",
+    "webpack": "^4.43.0",
+    "webpack-cli": "^3.3.11",
+    "webpack-dev-server": "^3.11.0",
+    "webpack-merge": "^4.2.2",
+    "webpack-node-externals": "^1.7.2"
   }
 }

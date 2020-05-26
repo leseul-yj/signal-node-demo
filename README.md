@@ -77,6 +77,10 @@ $ ./emsdk activate latest
 
  参考 
  https://xmanyou.com/wasm-emsdk-mac-start-up/
+
+将node的库 抽成js库 需要用到browserify
+browserify index.js > core.js 
+
 License
 --------
 Licensed under the GPLv3: http://www.gnu.org/licenses/gpl-3.0.html
