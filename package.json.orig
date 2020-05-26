@@ -2,7 +2,11 @@
   "name": "libsignal",
   "version": "2.0.1",
   "description": "Open Whisper Systems' libsignal for Node.js",
+<<<<<<< HEAD
   "repository": "https://github.com/leseul-yj/signal-node-demo.git",
+=======
+  "repository": "",
+>>>>>>> 0b17f6e8a0f2afff546c30938765858884874c9e
   "keywords": [
     "signal",
     "whispersystems",
