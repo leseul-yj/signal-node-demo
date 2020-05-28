@@ -48,7 +48,7 @@ class SessionBuilder {
                 }
             }
             record.setSession(session);
-            await this.storage.storeSession(fqAddr, record);
+            await this.storage.storeSession(fqAddr, record.serialize());
         });
     }
 
@@ -79,9 +79,18 @@ class SessionBuilder {
                                                  undefined, message.registrationId));
         return message.preKeyId;
     }
-
+    arrayToBuffer(key){
+        if(key==undefined){
+          return 
+        }else{
+          return Buffer.from(key)
+        }
+      }
     async initSession(isInitiator, ourEphemeralKey, ourSignedKey, theirIdentityPubKey,
                       theirEphemeralPubKey, theirSignedPubKey, registrationId) {
+                        theirIdentityPubKey = this.arrayToBuffer(theirIdentityPubKey);
+                        theirEphemeralPubKey = this.arrayToBuffer(theirEphemeralPubKey);
+                        theirSignedPubKey = this.arrayToBuffer(theirSignedPubKey);                   
         if (isInitiator) {
             if (ourSignedKey) {
                 throw new Error("Invalid call to initSession");
@@ -102,7 +111,7 @@ class SessionBuilder {
         for (var i = 0; i < 32; i++) {
             sharedSecret[i] = 0xff;
         }
-        const ourIdentityKey = await this.storage.getOurIdentity();
+        const ourIdentityKey = await this.storage.getIdentityKeyPair();
         const a1 = curve.calculateAgreement(theirSignedPubKey, ourIdentityKey.privKey);
         const a2 = curve.calculateAgreement(theirIdentityPubKey, ourSignedKey.privKey);
         const a3 = curve.calculateAgreement(theirSignedPubKey, ourSignedKey.privKey);

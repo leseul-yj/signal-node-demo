@@ -1,11 +1,12 @@
 
 'use strict';
 
-const curve25519 = require('../src/curve25519_wrapper');
+const curve25519 = require('./curve25519_wrapper');
 const nodeCrypto = require('crypto');
 
 
 function validatePrivKey(privKey) {
+    privKey = Buffer.from(privKey)
     if (privKey === undefined) {
         throw new Error("Undefined private key");
     }
@@ -18,6 +19,7 @@ function validatePrivKey(privKey) {
 }
 
 function scrubPubKeyFormat(pubKey) {
+    pubKey = Buffer.from(pubKey)
     if (!(pubKey instanceof Buffer)) {
         throw new Error(`Invalid public key type: ${pubKey.constructor.name}`);
     }
