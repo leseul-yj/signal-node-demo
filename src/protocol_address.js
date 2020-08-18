@@ -35,6 +35,14 @@ class ProtocolAddress {
         }
         return other.id === this.id && other.deviceId === this.deviceId;
     }
+
+    getDeviceId() {
+        return this.deviceId;
+    }
+
+    getName() {
+        return this.name;
+    }
 }
 
 module.exports = ProtocolAddress;

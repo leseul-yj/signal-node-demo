@@ -46,9 +46,22 @@ class SessionCipher {
     }
 
     async getRecord() {
-        const record = await this.storage.loadSession(this.addr.toString());
-        if (record && !(record instanceof SessionRecord)) {
-            throw new TypeError('SessionRecord type expected from loadSession'); 
+        // const record = await this.storage.loadSession(this.addr.toString());
+        // if (record && !(record instanceof SessionRecord)) {
+        //     throw new TypeError('SessionRecord type expected from loadSession'); 
+        // }
+        // return record;
+        const data = await this.storage.loadSession(this.addr.toString());
+        if (data === undefined) {
+            return undefined;
+        }
+        var record = new SessionRecord();
+        for(var key in data.sessions){
+          data.sessions[key] = Object.assign(SessionRecord.createEntry(), data.sessions[key]);
+        }
+        record.sessions = data.sessions;
+        if (record.sessions === undefined || record.sessions === null || typeof record.sessions !== "object" || Array.isArray(record.sessions)) {
+            throw new Error("Error deserializing SessionRecord");
         }
         return record;
     }
@@ -63,10 +76,11 @@ class SessionCipher {
     }
 
     async encrypt(data) {
+        data = Buffer.from(data);
         assertBuffer(data);
-        const ourIdentityKey = await this.storage.getOurIdentity();
+        const ourIdentityKey = await this.storage.getIdentityKeyPair();
         return await this.queueJob(async () => {
-            const record = await this.getRecord();
+            const record = SessionRecord.deserialize(await this.getRecord());
             if (!record) {
                 throw new errors.SessionError("No sessions");
             }
@@ -108,7 +122,7 @@ class SessionCipher {
                 type = 3;  // prekey bundle
                 const preKeyMsg = protobufs.PreKeyWhisperMessage.create({
                     identityKey: ourIdentityKey.pubKey,
-                    registrationId: await this.storage.getOurRegistrationId(),
+                    registrationId: await this.storage.getLocalRegistrationId(),
                     baseKey: session.pendingPreKey.baseKey,
                     signedPreKeyId: session.pendingPreKey.signedKeyId,
                     message: result
@@ -160,9 +174,10 @@ class SessionCipher {
     }
 
     async decryptWhisperMessage(data) {
+        data = Buffer.from(data,'base64');
         assertBuffer(data);
         return await this.queueJob(async () => {
-            const record = await this.getRecord();
+            const record = SessionRecord.deserialize(await this.getRecord());
             if (!record) {
                 throw new errors.SessionError("No session record");
             }
@@ -185,13 +200,14 @@ class SessionCipher {
     }
 
     async decryptPreKeyWhisperMessage(data) {
+        data = Buffer.from(data,'base64');
         assertBuffer(data);
         const versions = this._decodeTupleByte(data[0]);
         if (versions[1] > 3 || versions[0] < 3) {  // min version > 3 or max version < 3
             throw new Error("Incompatible version number on PreKeyWhisperMessage");
         }
         return await this.queueJob(async () => {
-            let record = await this.getRecord();
+            let record = SessionRecord.deserialize(await this.getRecord());
             const preKeyProto = protobufs.PreKeyWhisperMessage.decode(data.slice(1));
             if (!record) {
                 if (preKeyProto.registrationId == null) {
@@ -237,7 +253,7 @@ class SessionCipher {
         delete chain.messageKeys[message.counter];
         const keys = crypto.deriveSecrets(messageKey, Buffer.alloc(32),
                                           Buffer.from("WhisperMessageKeys"));
-        const ourIdentityKey = await this.storage.getOurIdentity();
+        const ourIdentityKey = await this.storage.getIdentityKeyPair();
         const macInput = new Buffer(messageProto.byteLength + (33 * 2) + 1);
         macInput.set(session.indexInfo.remoteIdentityKey);
         macInput.set(ourIdentityKey.pubKey, 33);
@@ -309,7 +325,7 @@ class SessionCipher {
 
     async hasOpenSession() {
         return await this.queueJob(async () => {
-            const record = await this.getRecord();
+            const record = SessionRecord.deserialize(await this.getRecord());
             if (!record) {
                 return false;
             }
@@ -319,7 +335,7 @@ class SessionCipher {
 
     async closeOpenSession() {
         return await this.queueJob(async () => {
-            const record = await this.getRecord();
+            const record = SessionRecord.deserialize(await this.getRecord());
             if (record) {
                 const openSession = record.getOpenSession();
                 if (openSession) {

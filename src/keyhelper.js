@@ -15,6 +15,10 @@ exports.generateRegistrationId = function() {
 };
 
 exports.generateSignedPreKey = function(identityKeyPair, signedKeyId) {
+    identityKeyPair = {
+        privKey: Buffer.from(identityKeyPair.privKey),
+        pubKey: Buffer.from(identityKeyPair.pubKey)
+    };
     if (!(identityKeyPair.privKey instanceof Buffer) ||
         identityKeyPair.privKey.byteLength != 32 ||
         !(identityKeyPair.pubKey instanceof Buffer) ||
